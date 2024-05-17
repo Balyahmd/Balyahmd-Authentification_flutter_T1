@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "327306600774",
+    "project_id": "tugas-app-2c661",
+    "storage_bucket": "tugas-app-2c661.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:327306600774:android:22dfec94a02e3416944547",
+        "android_client_info": {
+          "package_name": "com.example.flutter_tugas_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQcp5xmjljqJymz7IsmZqxpgMmW1bFaGg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
