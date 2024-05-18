@@ -1,42 +1,46 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class RegisterController extends ChangeNotifier {
+class LoginController extends ChangeNotifier {
   String _username = '';
   String get username => _username;
 
   String _messageError = '';
   String get messageError => _messageError;
-  var regisState = StateRegis.initial;
+  var loginState = StateLogin.initial;
 
-  void processRegister(String userName, String password) async {
-    regisState = StateRegis.loading;
+  void processLogin(String userName, String password) async {
+    loginState = StateLogin.loading;
     notifyListeners();
     try {
       final UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: userName, password: password);
+          .signInWithEmailAndPassword(email: userName, password: password);
       User user = userCredential.user!;
-      regisState = StateRegis.success;
+      loginState = StateLogin.success;
+
       _messageError = 'Hello ${user.uid}';
+      print(_messageError);
     } on FirebaseAuthException catch (error) {
-      regisState = StateRegis.error;
+      loginState = StateLogin.error;
       _messageError = error.message!;
     } catch (e) {
-      regisState = StateRegis.error;
+      loginState = StateLogin.error;
       _messageError = e.toString();
     }
     notifyListeners();
   }
+
+  void toggleMode() {}
 }
 
-enum StateRegis { initial, loading, success, error }
+enum StateLogin { initial, loading, success, error }
 
 showAlertErrorLogin(BuildContext context) {
   showDialog(
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: const Text('Gagal Register'),
+        title: const Text('Gagal Login!'),
         actions: [
           ElevatedButton(
               onPressed: () {

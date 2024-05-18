@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tugas_app/controller/register_controller.dart';
+import 'package:flutter_tugas_app/controller/login_controller.dart';
 import 'package:flutter_tugas_app/main.dart';
-import 'package:flutter_tugas_app/view/login_page.dart';
+import 'package:flutter_tugas_app/view/register_page.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  State<LoginPage> createState() => _RegisterPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
+class _RegisterPageState extends State<LoginPage> {
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   String? username;
@@ -33,7 +33,7 @@ class _RegisterPageState extends State<RegisterPage> {
           icon: Icon(Icons.home, color: Colors.white),
         ),
         title: Text(
-          'Register',
+          'Login',
           style: TextStyle(color: Colors.white),
         ),
         actions: [
@@ -115,8 +115,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 const SizedBox(
                   height: 10,
                 ),
-                context.watch<RegisterController>().regisState !=
-                        StateRegis.success
+                context.watch<LoginController>().loginState !=
+                        StateLogin.success
                     ? ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.deepPurpleAccent,
@@ -136,7 +136,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                         Navigator.of(context).pop();
                                         Navigator.of(context).pushReplacement(
                                           MaterialPageRoute(
-                                            builder: (context) => LoginPage(),
+                                            builder: (context) =>
+                                                RegisterPage(),
                                           ),
                                         );
                                       },
@@ -156,7 +157,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           children: [
                             Expanded(
                               child: Text(
-                                "Register",
+                                "login",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: 18,
