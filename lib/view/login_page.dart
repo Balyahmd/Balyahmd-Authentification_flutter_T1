@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tugas_app/controller/login_controller.dart';
+import 'package:flutter_tugas_app/controller/Auth_firebase_provider.dart';
 import 'package:flutter_tugas_app/main.dart';
 import 'package:flutter_tugas_app/view/register_page.dart';
 import 'package:provider/provider.dart';
@@ -13,17 +13,9 @@ class LoginPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<LoginPage> {
-  TextEditingController usernameController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  String? username;
-  String? password;
-
-  bool obscurePassword = true;
-  final _formKey = GlobalKey<FormState>();
-
   @override
   Widget build(BuildContext context) {
-    var sizeWidth = MediaQuery.sizeOf(context).width;
+    final authProvider = Provider.of<AuthFirebaseProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -49,7 +41,7 @@ class _RegisterPageState extends State<LoginPage> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
           child: Form(
-            key: _formKey,
+            key: authProvider.formKeyLogin,
             child: ListView(
               children: [
                 SizedBox(
@@ -70,7 +62,7 @@ class _RegisterPageState extends State<LoginPage> {
                   height: 15,
                 ),
                 TextFormField(
-                    controller: usernameController,
+                    controller: authProvider.emailController,
                     validator: (value) {
                       if (value == null ||
                           value.isEmpty ||
@@ -89,8 +81,8 @@ class _RegisterPageState extends State<LoginPage> {
                   height: 10,
                 ),
                 TextFormField(
-                    controller: passwordController,
-                    obscureText: obscurePassword,
+                    controller: authProvider.passwordController,
+                    obscureText: authProvider.obscurePassword,
                     validator: (value) {
                       if (value!.isEmpty) {
                         return 'Tolong isi Password';
@@ -102,11 +94,9 @@ class _RegisterPageState extends State<LoginPage> {
                         prefixIcon: Icon(Icons.lock),
                         suffixIcon: IconButton(
                             onPressed: () {
-                              setState(() {
-                                obscurePassword = !obscurePassword;
-                              });
+                              authProvider.actionObscurePassword();
                             },
-                            icon: Icon(obscurePassword == true
+                            icon: Icon(authProvider.obscurePassword
                                 ? Icons.visibility_off
                                 : Icons.visibility)),
                         border: const OutlineInputBorder(
@@ -115,62 +105,86 @@ class _RegisterPageState extends State<LoginPage> {
                 const SizedBox(
                   height: 10,
                 ),
-                context.watch<LoginController>().loginState !=
-                        StateLogin.success
-                    ? ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.deepPurpleAccent,
-                        ),
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return AlertDialog(
-                                  title: Text('Register Successful'),
-                                  content: Text(
-                                      'Berhasil Regis sebagai ${usernameController.text}, dengan UID:'),
-                                  actions: <Widget>[
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                        Navigator.of(context).pushReplacement(
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                RegisterPage(),
-                                          ),
-                                        );
-                                      },
-                                      child: Text('Ok'),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.deepPurpleAccent,
+                  ),
+                  onPressed: () {
+                    if (authProvider.formKeyLogin.currentState!.validate()) {
+                      authProvider.processLogin(context);
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text('Login  Successful'),
+                            content: Text(
+                                'Berhasil Login sebagai ${authProvider.emailController.text}, dengan UID ${authProvider.uid}'),
+                            actions: <Widget>[
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                      builder: (context) => RegisterPage(),
                                     ),
-                                  ],
-                                );
-                              },
-                            );
-                          } else {
-                            showAlertError();
-                          }
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment
-                              .center, // Pusatkan elemen di tengah baris
-                          children: [
-                            Expanded(
-                              child: Text(
-                                "login",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.deepPurpleAccent,
-                                ),
+                                  );
+                                },
+                                child: Text('Ok'),
                               ),
-                            ),
-                          ],
+                            ],
+                          );
+                        },
+                      );
+                    } else {
+                      showAlertError();
+                    }
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment
+                        .center, // Pusatkan elemen di tengah baris
+                    children: [
+                      Expanded(
+                        child: Text(
+                          "login",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.white,
+                          ),
                         ),
-                      )
-                    : SizedBox(
-                        height: 50,
                       ),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => RegisterPage()),
+                    );
+                  },
+                  child: Text.rich(
+                    TextSpan(
+                      text: 'Don\'t have an account?  ',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey, // Ubah warna teks menjadi putih
+                      ),
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: 'Register now!',
+                          style: TextStyle(
+                            color: Colors
+                                .deepPurpleAccent, // Ubah warna teks "Log in now!" menjadi ungu
+                          ),
+                        ),
+                      ],
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
               ],
             ),
           ),

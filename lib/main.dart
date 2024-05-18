@@ -1,7 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_tugas_app/controller/login_controller.dart';
-import 'package:flutter_tugas_app/controller/register_controller.dart';
+import 'package:flutter_tugas_app/controller/Auth_firebase_provider.dart';
 import 'package:flutter_tugas_app/view/register_page.dart';
 import 'package:provider/provider.dart';
 
@@ -27,10 +26,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (context) => RegisterController(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => LoginController(),
+          create: (context) => AuthFirebaseProvider(),
         ),
       ],
       child: MaterialApp(
