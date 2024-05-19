@@ -67,7 +67,7 @@ class _RegisterPageState extends State<LoginPage> {
                       if (value == null ||
                           value.isEmpty ||
                           !value.contains('@')) {
-                        return 'Tolong isi Email dengan benar';
+                        return 'Please fill the Email correctly';
                       }
                       return null;
                     },
@@ -85,7 +85,7 @@ class _RegisterPageState extends State<LoginPage> {
                     obscureText: authProvider.obscurePassword,
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'Tolong isi Password';
+                        return 'Please fill the Password correctly';
                       }
                       return null;
                     },
@@ -109,32 +109,37 @@ class _RegisterPageState extends State<LoginPage> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.deepPurpleAccent,
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     if (authProvider.formKeyLogin.currentState!.validate()) {
-                      authProvider.processLogin(context);
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: Text('Login  Successful'),
-                            content: Text(
-                                'Berhasil Login sebagai ${authProvider.emailController.text}, dengan UID ${authProvider.uid}'),
-                            actions: <Widget>[
-                              ElevatedButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                  Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                      builder: (context) => RegisterPage(),
-                                    ),
-                                  );
-                                },
-                                child: Text('Ok'),
-                              ),
-                            ],
-                          );
-                        },
-                      );
+                      String? loginAuth =
+                          await authProvider.processLogin(context);
+                      if (loginAuth == null) {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text('Login Successful'),
+                              content: Text(
+                                  'Berhasil Login sebagai ${authProvider.emailController.text}, dengan UID ${authProvider.uid}'),
+                              actions: <Widget>[
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                    Navigator.of(context).pushReplacement(
+                                      MaterialPageRoute(
+                                        builder: (context) => RegisterPage(),
+                                      ),
+                                    );
+                                  },
+                                  child: Text('Ok'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      } else {
+                        showAlertError();
+                      }
                     } else {
                       showAlertError();
                     }
@@ -198,7 +203,7 @@ class _RegisterPageState extends State<LoginPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Periksa kelengkapan datamu!'),
+          title: Text('Email and password incorect!'),
           actions: [
             ElevatedButton(
                 onPressed: () {

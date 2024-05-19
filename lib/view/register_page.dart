@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tugas_app/controller/Auth_firebase_provider.dart';
 import 'package:flutter_tugas_app/main.dart';
@@ -68,7 +67,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       if (value == null ||
                           value.isEmpty ||
                           !value.contains('@')) {
-                        return 'Tolong isi Email dengan benar';
+                        return 'Please fill the Email correctly';
                       }
                       return null;
                     },
@@ -86,7 +85,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     obscureText: authProvider.obscurePassword,
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'Tolong isi Password';
+                        return 'Please fill the password correctly';
                       }
                       return null;
                     },
@@ -110,32 +109,37 @@ class _RegisterPageState extends State<RegisterPage> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.deepPurpleAccent,
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     if (authProvider.formKeyRegister.currentState!.validate()) {
-                      authProvider.processRegister(context);
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: Text('Register Successful'),
-                            content: Text(
-                                'Berhasil Regsiter sebagai ${authProvider.emailController.text}, dengan UID ${authProvider.uid}'),
-                            actions: <Widget>[
-                              ElevatedButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                  Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                      builder: (context) => LoginPage(),
-                                    ),
-                                  );
-                                },
-                                child: Text('Ok'),
-                              ),
-                            ],
-                          );
-                        },
-                      );
+                      String? registerAuth =
+                          await authProvider.processRegister(context);
+                      if (registerAuth == null) {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text('Register Successful'),
+                              content: Text(
+                                  'Berhasil Regsiter sebagai ${authProvider.emailController.text}, dengan UID ${authProvider.uid}'),
+                              actions: <Widget>[
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                    Navigator.of(context).pushReplacement(
+                                      MaterialPageRoute(
+                                        builder: (context) => LoginPage(),
+                                      ),
+                                    );
+                                  },
+                                  child: Text('Ok'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      } else {
+                        ShowRegisterAlert();
+                      }
                     } else {
                       showAlertError();
                     }
@@ -199,7 +203,25 @@ class _RegisterPageState extends State<RegisterPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Periksa kelengkapan datamu!'),
+          title: Text('Check your email and password!'),
+          actions: [
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('Ok'))
+          ],
+        );
+      },
+    );
+  }
+
+  ShowRegisterAlert() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Email has been registered !'),
           actions: [
             ElevatedButton(
                 onPressed: () {

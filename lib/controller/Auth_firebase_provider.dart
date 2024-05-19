@@ -14,7 +14,7 @@ class AuthFirebaseProvider extends ChangeNotifier {
   var messageError = '';
   bool obscurePassword = true;
 
-  void processRegister(BuildContext context) async {
+  Future<String?> processRegister(BuildContext context) async {
     if (formKeyRegister.currentState!.validate()) {
       try {
         UserCredential result = await FirebaseAuth.instance
@@ -24,9 +24,11 @@ class AuthFirebaseProvider extends ChangeNotifier {
         username = emailController.text;
         uid = dataUser.uid;
         registerState = StateRegister.success;
+        return null;
       } on FirebaseAuthException catch (error) {
         registerState = StateRegister.error;
         messageError = error.message!;
+        return messageError;
       } catch (e) {
         loginState = StateLogin.error;
         messageError = e.toString();
@@ -38,7 +40,7 @@ class AuthFirebaseProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void processLogin(BuildContext context) async {
+  Future<String?> processLogin(BuildContext context) async {
     if (formKeyLogin.currentState!.validate()) {
       try {
         UserCredential result = await FirebaseAuth.instance
@@ -48,9 +50,11 @@ class AuthFirebaseProvider extends ChangeNotifier {
         username = emailController.text;
         uid = dataUser.uid;
         loginState = StateLogin.success;
+        return null;
       } on FirebaseAuthException catch (error) {
         loginState = StateLogin.error;
         messageError = error.message!;
+        return messageError;
       } catch (e) {
         loginState = StateLogin.error;
         messageError = e.toString();
@@ -77,7 +81,7 @@ showAlertError(BuildContext context) {
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: const Text('Periksa kelengkapan datamu!'),
+        title: const Text('Email and Password Incorrect !'),
         actions: [
           ElevatedButton(
               onPressed: () {
